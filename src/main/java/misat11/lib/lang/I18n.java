@@ -24,12 +24,20 @@ public class I18n {
 		return i18n(key, null, true);
 	}
 
+	public static String i18nonly(String key) {
+		return i18n(key, null, false);
+	}
+
 	public static String i18n(String key, boolean prefix) {
 		return i18n(key, null, prefix);
 	}
 	
 	public static String i18n(String key, String defaultK) {
 		return i18n(key, defaultK, true);
+	}
+
+	public static String i18nonly(String key, String defaultK) {
+		return i18n(key, defaultK, false);
 	}
 	
 	public static String i18n(String key, String defaultK, boolean prefix) {
