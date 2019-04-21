@@ -69,3 +69,19 @@ Small tool for load language in my spigot plugins.
   ```
 5. Now build your plugin and enjoy it!
 `mvn install`
+
+## Languages file
+Put languages file to your jar with name `messages_<langcode>.yml`
+You can put file to plugin data folder too.
+
+If something is missing (full language or part), it'll be loaded from `messages_en.yml`
+
+```yaml
+lang_name: "My Language"
+
+prefix: "[My Best Plugin]"
+
+# Your translates
+
+my_key: "This is my translate!"
+```
