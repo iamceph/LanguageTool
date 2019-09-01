@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -45,8 +46,12 @@ public class I18n {
 		if (prefix) {
 			value += translate("prefix", "") + " ";
 		}
-		value += translate(key, defaultK);
-		return value;
+
+		if (key != null) {
+			value += translate(key, defaultK);
+		}
+
+		return ChatColor.translateAlternateColorCodes('&', value);
 	}
 
 	private static String translate(String base, String defaultK) {
@@ -62,6 +67,7 @@ public class I18n {
 		if (defaultK != null) {
 			return defaultK;
 		}
+
 		return "§c" + base;
 	}
 
@@ -74,20 +80,16 @@ public class I18n {
 			config_baseLanguage = new YamlConfiguration();
 			try {
 				config_baseLanguage.load(new InputStreamReader(inb, StandardCharsets.UTF_8));
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InvalidConfigurationException e) {
+			} catch (IOException | InvalidConfigurationException | NullPointerException e) {
 				e.printStackTrace();
 			}
-		}
+        }
 		InputStream in = plugin.getResource("messages_" + locale + ".yml");
 		config = new YamlConfiguration();
 		if (in != null) {
 			try {
 				config.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InvalidConfigurationException e) {
+			} catch (IOException | InvalidConfigurationException e) {
 				e.printStackTrace();
 			}
 		}
@@ -96,9 +98,7 @@ public class I18n {
 		if (customMessageConfigF.exists()) {
 			try {
 				customMessageConfig.load(customMessageConfigF);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InvalidConfigurationException e) {
+			} catch (IOException | InvalidConfigurationException e) {
 				e.printStackTrace();
 			}
 		}
