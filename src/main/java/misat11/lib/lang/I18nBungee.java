@@ -1,24 +1,22 @@
 package misat11.lib.lang;
 
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
-public class I18n {
+public class I18nBungee {
     public static final String base_lang_code = "en";
 
     private static String locale = "en";
-    private static FileConfiguration config_baseLanguage;
-    private static FileConfiguration config;
-    private static FileConfiguration customMessageConfig;
+    private static Configuration config_baseLanguage;
+    private static Configuration config;
+    private static Configuration customMessageConfig;
 
     public static String i18n(String key) {
         return i18n(key, null, true);
@@ -54,12 +52,12 @@ public class I18n {
     }
 
     private static String translate(String base, String defaultK) {
-        if (customMessageConfig.isSet(base)) {
+        if (isSet(base, customMessageConfig)) {
             return customMessageConfig.getString(base);
-        } else if (config.isSet(base)) {
+        } else if (isSet(base, config)) {
             return config.getString(base);
         } else if (config_baseLanguage != null) {
-            if (config_baseLanguage.isSet(base)) {
+            if (isSet(base,config_baseLanguage)) {
                 return config_baseLanguage.getString(base);
             }
         }
@@ -75,33 +73,32 @@ public class I18n {
             locale = loc;
         }
         if (!base_lang_code.equals(locale)) {
-            InputStream inb = plugin.getResource("messages_" + base_lang_code + ".yml");
-            config_baseLanguage = new YamlConfiguration();
-            try {
-                config_baseLanguage.load(new InputStreamReader(inb, StandardCharsets.UTF_8));
-            } catch (IOException | InvalidConfigurationException | NullPointerException e) {
-                e.printStackTrace();
+            InputStream inb = plugin.getResourceAsStream("messages_" + base_lang_code + ".yml");
+            if (inb != null) {
+                config_baseLanguage = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inb);
             }
         }
-        InputStream in = plugin.getResource("messages_" + locale + ".yml");
-        config = new YamlConfiguration();
+        InputStream in = plugin.getResourceAsStream("messages_" + locale + ".yml");
         if (in != null) {
-            try {
-                config.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-            } catch (IOException | InvalidConfigurationException e) {
-                e.printStackTrace();
-            }
+            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(in);
         }
-        customMessageConfig = new YamlConfiguration();
         File customMessageConfigF = new File(plugin.getDataFolder(), "messages_" + locale + ".yml");
         if (customMessageConfigF.exists()) {
             try {
-                customMessageConfig.load(customMessageConfigF);
-            } catch (IOException | InvalidConfigurationException e) {
+                customMessageConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(customMessageConfigF);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         plugin.getLogger()
-                .info("Successfully loaded messages for " + plugin.getName() + "! Language: " + translate("lang_name", null));
+                .info("Successfully loaded messages for " + plugin.getDescription().getName() + "! Language: " + translate("lang_name", null));
+    }
+
+    private static boolean isSet(String path, Configuration config) {
+        if (config == null) {
+            return false;
+        } else {
+            return config.get(path, null) != null;
+        }
     }
 }

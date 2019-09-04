@@ -1,5 +1,5 @@
 # LanguageTool
-Small tool for load language in my spigot plugins.
+Small but very usefull tool for loading different languages in Bukkit or BungeeCord plugins!
 
 [![Build Status](https://jenkins.mtorus.cz:443/view/Minecraft%20plugins/job/LanguageTool/badge/icon?style=flat-square)](https://jenkins.mtorus.cz:443/view/Minecraft%20plugins/job/LanguageTool/)
 
@@ -25,7 +25,13 @@ Small tool for load language in my spigot plugins.
   import static misat11.lib.lang.I18n.*;
   
   String myLocale = "en";
+  (SPIGOT)
   load(this, myLocale);
+
+  (BUNGEE)
+  loadBungee(this, myLocale)
+
+
   
   ....
   
